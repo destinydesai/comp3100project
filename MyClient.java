@@ -4,28 +4,39 @@ import java.util*;
 
 public class MyClient {
   public static void main(String[] args) throws Exception {
+    
     Socket s = new Socket("localhost", 50000);
     DataInputStream dis = new DataInputStream(s.getInputStream());
     DataOutputStream dout = new DataOutputStream(s.getOutputStream());
     BufferedReader in = new BufferedReader (new InputStreamReader(s.getInputStream()));
-    String username = System.getProperty("user.name");
-    String str = "";
-    String parser = "";
     
-    dout.write(("HELO\n").getBytes());
+    //declarations and initialisations
+    String username = System.getProperty("user.name"); //will be used for AUTH command
+    String str = ""; //throughout code for receiving commands from server
+    String parser = ""; //splits string into relevant sections to be used for identifying largest server
+    int count = 0; //will be used for iterating through jobs??
+    
+    dout.write(("HELO\n").getBytes()); //starts handshake protocol
     dout.flush();
-    str = in.readLine(); //should be OK
+    str = in.readLine(); //should be OK from server
     //System.out.println("message1 = " + str);
-    dout.write(("AUTH " + username + "\n").getBytes());
+    dout.write(("AUTH " + username + "\n").getBytes()); //authentication step
     dout.flush();
-    str = in.readLine(); // should be OK
+    str = in.readLine(); // should be OK from server
     //System.out.println("message2 = " + str1);
-    dout.write(("REDY\n").getBytes());
+    dout.write(("REDY\n").getBytes()); //initiates job scheduling
     dout.flush();
     str = in.readLine(); // should be JOBN/JCPL/NONE
-   // System.out.println("message3 = " + str2);
-    //String[] tempy = str.split (" ");
-    //String job info??
+    //JOBN provides scheduling information (used first time)
+    //JCPL is used to check what the status of the scheduling is
+    //NONE is used to indicate that there are no jobs, will initiate termination of program
+    
+    // System.out.println("message3 = " + str2);
+   
+    String[] temp = str.split (" "); //splits information recived from server into array storing information temporarily until 
+    //String job info?? 
+    
+    
     dout.write(("GETS All\n").getBytes());
     dout.flush();
     str = in.readLine();
@@ -40,20 +51,7 @@ public class MyClient {
       str = in.readLine();
     //System.out.println(str5);
     }
-    dout.write(("SCHD 0 4xlarge 1\n").getBytes());
-    dout.flush();
-    dout.write(("SCHD 1 4xlarge 2\n").getBytes());
-    dout.flush();
-    dout.write(("SCHD 2 4xlarge 3\n").getBytes());
-    dout.flush();
-    dout.write(("SCHD 3 4xlarge 4\n").getBytes());
-    dout.flush();
-    dout.write(("SCHD 4 4xlarge 5\n").getBytes());
-    dout.flush();
-    dout.write(("SCHD 5 4xlarge 6\n").getBytes());
-    dout.flush();
     str = in.readLine();
-    //System.out.println("Message9 = " + str28);
     dout.write(("QUIT\n").getBytes());
     dout.flush();
     dout.close();
